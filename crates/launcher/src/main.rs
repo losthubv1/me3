@@ -6,12 +6,11 @@ use std::fs::OpenOptions;
 use me3_env::{LauncherVars, TelemetryVars};
 use me3_launcher_attach_protocol::{AttachConfig, AttachRequest};
 use me3_telemetry::TelemetryConfig;
-use tracing::{info, instrument, warn};
+use tracing::{info, instrument};
 
-use crate::{game::Game, steam::require_steam, writer::MakeWriterWrapper};
+use crate::{game::Game, writer::MakeWriterWrapper};
 
 mod game;
-mod steam;
 mod wine;
 mod writer;
 
@@ -35,12 +34,6 @@ fn run(
         "Starting game at {:?} with DLL {:?}",
         args.exe, args.host_dll
     );
-
-    if !config.skip_steam_init {
-        require_steam(&args.exe)?;
-    } else {
-        warn!("skipping Steam initialization, no guarantee Steam game will launch successfully");
-    }
 
     let game_path = args.exe.parent();
     let game = Game::launch(&args.exe, args.argv, game_path)?;
